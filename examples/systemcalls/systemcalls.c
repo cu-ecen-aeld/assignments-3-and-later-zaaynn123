@@ -1,4 +1,10 @@
 #include "systemcalls.h"
+#include "stdlib.h"
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 /**
  * @param cmd the command to execute with system()
@@ -15,9 +21,16 @@ bool do_system(const char *cmd)
  *  Call the system() function with the command set in the cmd
  *   and return a boolean true if the system() call completed with success
  *   or false() if it returned a failure
-*/
-
-    return true;
+*/  if(cmd == NULL)
+	return false;
+	
+    bool pass = true; 
+    int val = system(cmd);
+    
+    if( val != 0)
+    	pass = false;
+    	
+    return pass;
 }
 
 /**
@@ -56,12 +69,37 @@ bool do_exec(int count, ...)
  *   Use the command[0] as the full path to the command to execute
  *   (first argument to execv), and use the remaining arguments
  *   as second argument to the execv() command.
- *
+ *	
 */
 
+     fflush(stdout);
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        return false;
+    }
+    else if (pid > 0)
+    {
+        int stat;
+        waitpid(pid, &stat, 0);
+        if (WIFEXITED(stat))
+        {
+            int code = WEXITSTATUS(stat); 
+            return ((code == 0) ? true : false); 
+            }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        int code = execv(command[0], command);
+        if(code == -1)
+        exit(code);
+    }
     va_end(args);
-
-    return true;
+    return false;
 }
 
 /**
@@ -92,6 +130,33 @@ bool do_exec_redirect(const char *outputfile, int count, ...)
  *   The rest of the behaviour is same as do_exec()
  *
 */
+ int kidpid;
+ int fd = open(outputfile, O_WRONLY|O_TRUNC|O_CREAT, 0644);
+ fflush(stdout);
+ if (fd < 0) { perror("open"); return false; }
+ switch (kidpid = fork()) {
+   case -1: perror("fork"); return false;
+   case 0:
+     if (dup2(fd, 1) < 0) { perror("dup2"); return false; }
+     close(fd);
+     execv(command[0], command); perror("execv"); abort();
+   default:
+     close(fd);
+     int stat;
+     waitpid(kidpid,&stat,0);
+    
+    if(WIFEXITED(stat))
+    { int code = WEXITSTATUS(stat);
+    if (code == 0)
+    	return true;
+    else
+    	return false;
+    }
+    else
+    return false;
+     
+}
+
 
     va_end(args);
 
