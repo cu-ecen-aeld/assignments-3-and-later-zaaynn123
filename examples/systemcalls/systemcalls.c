@@ -94,12 +94,11 @@ bool do_exec(int count, ...)
     }
     else
     {
-        int code = execv(command[0], command);
-        if(code == -1)
-        exit(code);
+        execv(command[0], command);
+        abort();
     }
     va_end(args);
-    return false;
+    return true;
 }
 
 /**
