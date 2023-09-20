@@ -8,13 +8,14 @@ on:
 jobs:
     unit-test:
         container: cuaesd/aesd-autotest:unit-test
-        runs-on: self-host
+        runs-on: ubuntu-latest
         steps:
           - uses: actions/checkout@v2
           - name: Checkout submodules
             run : git submodule update --init --recursive
           - name: Run unit test
             run: ./unit-test.sh
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     full-test:
@@ -41,3 +42,6 @@ jobs:
 >>>>>>> assignments-base/assignment3-part-1
 =======
 >>>>>>> assignments-base/assignment3-part-2
+=======
+
+>>>>>>> 39351927177d9bf236fb79bbb7568f56314cf26d
