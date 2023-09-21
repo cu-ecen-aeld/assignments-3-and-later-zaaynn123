@@ -24,8 +24,4 @@ jobs:
             run : git submodule update --init --recursive
           - name: Run full test
             run: ./full-test.sh
-=======
->>>>>>> assignments-base/assignment3-part-2
-=======
 
->>>>>>> 39351927177d9bf236fb79bbb7568f56314cf26d
