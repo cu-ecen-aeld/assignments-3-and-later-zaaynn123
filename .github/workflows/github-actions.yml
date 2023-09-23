@@ -15,8 +15,3 @@ jobs:
             run : git submodule update --init --recursive
           - name: Run unit test
             run: ./unit-test.sh
-<<<<<<< HEAD
-  
-
-=======
->>>>>>> assignments-base/assignment4
